@@ -4,7 +4,9 @@ from tkinter import Label, LabelFrame, Entry, Button, Listbox, Scrollbar, messag
 from PIL import ImageTk
 from tkcalendar import DateEntry
 from datetime import datetime
-import pymysql
+import psycopg2
+from psycopg2 import sql
+
 
 class Todo:
     def __init__(self, todo_root):
@@ -73,11 +75,11 @@ class Todo:
 
     def Create_Data(self):
                 try:
-                    Connection_var=pymysql.connect(host="localhost", user= "YourUser", password= "YourPassword")
+                    Connection_var=psycopg2.connect(dbname="neondb", user= "neondb_owner", password= "y0ixLQr5cejH", host="ep-raspy-limit-a15i1ow4.ap-southeast-1.aws.neon.tech", port="5432")
                     MyCursor=Connection_var.cursor()
-                    MyCursor.execute("CREATE DATABASE IF NOT EXISTS todo_list")
-                    MyCursor.execute("use todo_list")
-                    MyCursor.execute("create table if not exists data(id int auto_increment primary key not null, Task varchar(1000), Priority varchar(10), Target_Date varchar(20), status varchar(10))")
+                    MyCursor.execute("create table if not exists data(id SERIAL PRIMARY KEY, Task TEXT, Priority TEXT, Target_Date DATE, status TEXT)")
+                    Connection_var.commit()
+                    MyCursor.close()
                     Connection_var.close()
                 except Exception as e:
                     messagebox.showerror("Error", f"There is no task to add the task{e}")
@@ -87,9 +89,8 @@ class Todo:
         elif self.Priority.get()=="--Set Priority--": messagebox.showerror("Error", "Set the priority for task")
         else:
             try:
-                Connection_var=pymysql.connect(host="localhost", user= "YourUser", password= "YourPassword", database="todo_list")
+                Connection_var=psycopg2.connect(dbname="neondb", user= "neondb_owner", password= "y0ixLQr5cejH", host="ep-raspy-limit-a15i1ow4.ap-southeast-1.aws.neon.tech", port="5432")
                 MyCursor=Connection_var.cursor()
-                MyCursor.execute("use todo_list")
                 MyCursor.execute("insert into data (Task, Priority, Target_Date, Status) values(%s, %s, %s, %s)", (self.Task_entry.get(), self.Priority.get(), self.Target_Date.get(), "Pending"))
                 Connection_var.commit()
                 Connection_var.close()
@@ -102,7 +103,7 @@ class Todo:
 
     def fetch_data(self):
         try:
-            Connection_var = pymysql.connect(host="localhost", user="root", password="YourPassword", database="todo_list")
+            Connection_var = psycopg2.connect(dbname="neondb", user= "neondb_owner", password= "y0ixLQr5cejH", host="ep-raspy-limit-a15i1ow4.ap-southeast-1.aws.neon.tech", port="5432")
             cursor = Connection_var.cursor()
             cursor.execute("SELECT id, Task, Priority, Target_Date, Status FROM data")
             rows = cursor.fetchall()
@@ -180,14 +181,14 @@ class Todo:
         new_status = status_menu.get()
         try:
             if new_status == "Delete":
-                connection = pymysql.connect(host="localhost", user="root", password="YourPassword", database="todo_list")
+                connection = psycopg2.connect(dbname="neondb", user= "neondb_owner", password= "y0ixLQr5cejH", host="ep-raspy-limit-a15i1ow4.ap-southeast-1.aws.neon.tech", port="5432")
                 cursor = connection.cursor()
                 cursor.execute("DELETE FROM data WHERE id = %s", (task_id,))
                 connection.commit()
                 connection.close()
                 self.populate_listbox()
             else:
-                connection = pymysql.connect(host="localhost", user="root", password="YourPassword", database="todo_list")
+                connection = psycopg2.connect(dbname="neondb", user= "neondb_owner", password= "y0ixLQr5cejH", host="ep-raspy-limit-a15i1ow4.ap-southeast-1.aws.neon.tech", port="5432")
                 cursor = connection.cursor()
                 cursor.execute("UPDATE data SET Status = %s WHERE id = %s", (new_status, task_id))
                 connection.commit()
