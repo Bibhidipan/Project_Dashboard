@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import*
 from tkinter import Label, LabelFrame, Entry, Button, Listbox, Scrollbar, messagebox, ttk
-from PIL import ImageTk
 from tkcalendar import DateEntry
 from datetime import datetime
 import psycopg2
 from psycopg2 import sql
+
 
 
 class Todo:
@@ -202,6 +202,3 @@ if __name__ == "__main__":
     todo_root = tk.Tk()
     app = Todo(todo_root)
     todo_root.mainloop()
-
-
- 
