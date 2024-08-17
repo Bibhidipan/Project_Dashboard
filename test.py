@@ -731,4 +731,4 @@ def main(page: ft.Page):
     Create_Task_Table()
     Authentication_Page(page)
 
-ft.app(target=main)
+ft.app(target=main, view=ft.AppView.WEB_BROWSER)
